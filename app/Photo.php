@@ -12,4 +12,8 @@ class Photo extends Model
     public function getPathAttribute($value){
         return  asset('/storage/upload').'/'.$value;
     }
+
+
+
+
 }

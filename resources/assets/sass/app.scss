@@ -1,9 +1,23 @@
+// @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
-// Fonts
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+#admin-page {
 
-// Variables
-@import "variables";
+  padding-top:0px;
 
-// Bootstrap
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+}
+
+
+#nested-comment{
+
+  margin-top:60px;
+
+
+}
+
+.comment-reply {
+
+  display: none;
+  
+  
+}
