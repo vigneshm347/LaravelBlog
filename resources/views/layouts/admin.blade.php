@@ -31,7 +31,7 @@
 
 <body id="admin-page" style="display: inline;  margin: 0;">
 
-{{--<div id="wrapper" style="width: 200px;  margin: 0">--}}
+{{--<div id="wrapper" style="width: 200px;">--}}
 
     {{--<!-- Navigation -->--}}
     {{--<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0; width: 200px">--}}

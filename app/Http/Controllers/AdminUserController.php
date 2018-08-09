@@ -8,6 +8,7 @@ use App\User;
 use App\Role;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class AdminUserController extends Controller
@@ -22,7 +23,6 @@ class AdminUserController extends Controller
     public function index()
     {
         $users = User::all();
-
         //return Storage::disk('public')->get('storage/app/images/Adminhadk-1.PNG');
         return view('admin.users.index', compact('users'));
     }
@@ -132,13 +132,28 @@ class AdminUserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //C:\xampp\htdocs\blogApp\storage\app\public\upload\1533764748_Capture.PNG
+        $user = User::find($id);
+        if($user->photo_id !=0){
+            $filename = pathinfo($user->photo->path, PATHINFO_FILENAME);
+            $fileExtention = pathinfo($user->photo->path, PATHINFO_EXTENSION);
+            unlink(storage_path('app\public\upload'.'\\'.$filename.'.'.$fileExtention));
+            Storage::delete($filename.'.'.$fileExtention);
+        }
+
+        User::find($id)->delete();
+
+        Session::flash('user_deleted', 'User has been deleted');
+
+        return redirect()->route('users.index');
     }
 
     public function getUserRoles()
     {
         return Role::pluck('name', 'id')->toArray();
     }
+
+
 
 
 }

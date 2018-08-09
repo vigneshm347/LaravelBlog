@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 
 @section('content')
+    @if(Session::has('user_deleted'))
+        <p>{{session('user_deleted')}}</p>
+    @endif
     <h1>Users</h1>
         @if($users)
             <table class="table">

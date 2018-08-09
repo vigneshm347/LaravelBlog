@@ -38,12 +38,20 @@
             {!! Form::submit('submit', ["class"=>"btn btn-primary"]) !!}
         </div>
         {!! Form::close() !!}
-
+        <div>
+            {!! Form::open(["method"=>"delete", "action"=>["AdminUserController@destroy", $user->id]]) !!}
+            <div class="form-group">
+                {!! Form::submit('Delete user', ["class"=>"btn btn-danger"]) !!}
+            </div>
+            {!! Form::close() !!}
+        </div>
         @include('errors.formError')
     </div>
+
 
     <div class="col-sm-3">
         <img src="{{($user->photo)?$user->photo->path:'https://placehold.it/400x400'}}" alt="" class="img-responsive img-circle">
     </div>
+
 
 @endsection
