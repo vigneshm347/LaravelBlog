@@ -1,8 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Requests\UsersEditRequest;
+use App\Http\Requests\UsersRequest;
+use App\Photo;
+use App\User;
+use App\Role;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminUserController extends Controller
 {
@@ -11,9 +17,14 @@ class AdminUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
     public function index()
     {
-        //
+        $users = User::all();
+
+        //return Storage::disk('public')->get('storage/app/images/Adminhadk-1.PNG');
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -23,24 +34,42 @@ class AdminUserController extends Controller
      */
     public function create()
     {
-        //
+
+        $roles = $this->getUserRoles();
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UsersRequest $request)
     {
-        //
+
+        $input = $request->all();
+        $file = $request->file('photo_id');
+        if($file){
+            $size = $file->getClientSize();
+            $fileNameWithExt = $file->getClientOriginalName();
+            $fileNameToStore = time() . '_' . $fileNameWithExt;
+            $file->storeAs('public/upload', $fileNameToStore);
+            $photo = (Photo::create(["path" => $fileNameToStore, "size" => $size]));
+            $input['photo_id'] = $photo->id;
+        }
+        else{
+            $input['photo_id'] = 0;
+        }
+        $input['password'] = bcrypt($request->password);
+        User::create($input);
+        return redirect('/admin/users');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -51,34 +80,65 @@ class AdminUserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $roles = $this->getUserRoles();
+        return view('admin.users.edit', compact('user', 'roles', 'status'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UsersEditRequest $request, $id)
     {
-        //
+        $user=User::findOrFail($id);
+        if($request->password == ""){
+            $input = $request->except('password');
+        } else{
+           $input = $request->all();
+           $input['password'] = bcrypt($request->password);
+        };
+        $file = $request->file('photo_id');
+        if($file){
+            $size = $file->getClientSize();
+            $fileNameWithExt = $file->getClientOriginalName();
+            $fileNameToStore = time() . '_' . $fileNameWithExt;
+            $file->storeAs('public/upload', $fileNameToStore);
+            $photo = (Photo::create(["path" => $fileNameToStore, "size" => $size]));
+            $input['photo_id'] = $photo->id;
+        }
+        else{
+            $input['photo_id'] = 0;
+        }
+
+            $user->update($input);
+        return redirect('/admin/users');
+        return $user;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         //
     }
+
+    public function getUserRoles()
+    {
+        return Role::pluck('name', 'id')->toArray();
+    }
+
+
 }
